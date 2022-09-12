@@ -1,7 +1,9 @@
 from PIL import Image
 from pprint import pprint
 from random import randint
+from pokemon_image import get_pokemon
 import numpy as np
+import os
 
 
 def to_image(arr):
@@ -23,9 +25,8 @@ def always_positive(num):
   return num
 
 def shiny(image):
-  shiny_maker = randint(0, 255)
+  shiny_maker = randint(100, 200)
   shiny_index = np.random.randint(0, 3)
-  print(shiny_maker, shiny_index)
 
   image_array = np.array(image)
   for i in range(len(image_array)):
@@ -35,9 +36,26 @@ def shiny(image):
   return to_image(image_array)
 
 
-filename = 'pikachu-f.png'
-image = Image.open(filename)
-image.show()
+# If pokemon sprites do not exist, download them.
+if os.path.exists('pokemons'):
+  filenames = os.listdir('pokemons')
+  if len(filenames) == 0:
+    get_pokemon()
+    filenames = os.listdir('pokemons')
+else:
+  get_pokemon()
+  filenames = os.listdir('pokemons')
 
-for i in range(5):
-  shiny(image).show()
+
+# If a folder already exists, remove it.
+if os.path.exists('shinies'):
+  os.rmdir('shinies')
+os.makedirs('shinies')
+
+# Creating shinies.
+for filename in filenames:
+  image = Image.open(f'pokemons/{filename}')
+  for i in range(1):
+    shiny(image).save(f'shinies/{filename}')
+
+
