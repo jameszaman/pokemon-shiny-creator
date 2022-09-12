@@ -31,6 +31,10 @@ def get_pokemon():
   if not os.path.exists('pokemons'):
     os.makedirs('pokemons')
   
+  # In case the folder already exists, there is a chance pokemons are already downloaded.
+  pokemon_list = os.listdir('pokemons')
+  
   for name in pokemon_names:
-    download_file(f'{image_url}/{name}.png', f'pokemons/{name}.png')
+    if f'{name}.png' not in pokemon_list:
+      download_file(f'{image_url}/{name}.png', f'pokemons/{name}.png')
 
