@@ -1,10 +1,12 @@
 from PIL import Image
+from tqdm import tqdm
 from pprint import pprint
 from random import randint
-from pokemon_image import get_pokemon
-import numpy as np
+from pokemon_image import download_pokemon_sprites
+
 import os
 import shutil
+import numpy as np
 
 
 def to_image(arr):
@@ -36,27 +38,27 @@ def shiny(image):
   
   return to_image(image_array)
 
+def generate_shinies(pokemon_folder='pokemons', shiny_folder='shinies'):
+  # If pokemon sprites do not exist, download them.
+  if os.path.exists(pokemon_folder):
+    filenames = os.listdir(pokemon_folder)
+    if len(filenames) == 0:
+      download_pokemon_sprites(pokemon_folder)
+      filenames = os.listdir(pokemon_folder)
+  else:
+    download_pokemon_sprites(pokemon_folder)
+    filenames = os.listdir(pokemon_folder)
 
-# If pokemon sprites do not exist, download them.
-if os.path.exists('pokemons'):
-  filenames = os.listdir('pokemons')
-  if len(filenames) == 0:
-    get_pokemon()
-    filenames = os.listdir('pokemons')
-else:
-  get_pokemon()
-  filenames = os.listdir('pokemons')
+  # If a folder already exists, remove it.
+  if os.path.exists(shiny_folder):
+    shutil.rmtree(shiny_folder)
+  os.makedirs(shiny_folder)
 
+  # Creating shinies.
+  for filename in tqdm(filenames, desc="Generating new shiny sprites"):
+    image = Image.open(f'{pokemon_folder}/{filename}')
+    for i in range(1):
+      shiny(image).save(f'{shiny_folder}/{filename}')
 
-# If a folder already exists, remove it.
-if os.path.exists('shinies'):
-  shutil.rmtree('shinies')
-os.makedirs('shinies')
-
-# Creating shinies.
-for filename in filenames:
-  image = Image.open(f'pokemons/{filename}')
-  for i in range(1):
-    shiny(image).save(f'shinies/{filename}')
-
-
+if __name__ == '__main__':
+  generate_shinies()
