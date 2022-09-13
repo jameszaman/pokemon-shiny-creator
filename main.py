@@ -4,6 +4,7 @@ from random import randint
 from pokemon_image import get_pokemon
 import numpy as np
 import os
+import shutil
 
 
 def to_image(arr):
@@ -49,7 +50,7 @@ else:
 
 # If a folder already exists, remove it.
 if os.path.exists('shinies'):
-  os.rmdir('shinies')
+  shutil.rmtree('shinies')
 os.makedirs('shinies')
 
 # Creating shinies.
